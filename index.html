@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+    <style>
+        .completed {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container my-3">
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">待辦事項</span>
+            </div>
+            <input type="text" class="form-control" placeholder="準備要做的任務" 
+                   v-model="newTodo" 
+                   @keyup.enter="addTodo"> <!-- newTodo  addTodo -->
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" 
+                        @click="addTodo">新增</button> <!-- addTodo -->
+            </div>
+        </div>
+<!------------------------------------------------------------------------------------------- -->
+        <div class="card text-center">
+
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link " href="#"
+                           :class="{active:visibility == 'all'}" 
+                           @click="visibility = 'all'">全部</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#" 
+                           :class="{active:visibility == 'still'}"
+                           @click="visibility = 'still'">進行中</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" 
+                           :class="{active:visibility == 'complted'}"
+                           @click="visibility = 'complted'">已完成</a>
+                    </li>
+                </ul>
+            </div>
+<!------------------------------------------------------------------------------------------- -->
+            <ul class="list-group list-group-flush text-left">
+                <!-- 為 item 增添 key 值 , 讓新<li> 生成時有個索引產生 好讓刪除紐有依據 -->
+                <li class="list-group-item" 
+                    v-for="(item,key) in filteredTodos">  <!-- toodos => filteredTodos -->
+                    <div class="d-flex" v-if="item.id !== cacheTodo.id"> <!--使用 v-if 來作條件判斷要顯示原todos內容
+                    或是 input 的編輯樣式 (因為在要編輯的代辦事項上雙擊兩下會把todos 裡的內容存到 cache 裡面所以這用以此判斷)-->
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" 
+                                   v-model="item.completed" 
+                                   :id="item.id">
+                            <label class="form-check-label" 
+                                   :class="{completed:item.completed}"
+                                   :for="item.id"
+                                  >  <!-- :class -->
+                                <span v-text="item.title"></span>
+                            </label>
+                        </div> 
+                        <button type="button" class="close ml-auto" 
+                                @click="editTodo(item)">
+                            <span aria-hidden="true"> <i class="fas fa-edit" style="font-size:16px;"></i></span>
+                        </button>
+                        <button type="button" class="close" aria-label="Close" 
+                                @click="removeTodo(item)">  <!--  這裡有參數 是item 本身 在按下後傳送過去 
+                                                        ( 這裡就不再使用 key 值了(key 是陣列的索引位置 對應上方的 v-for 裡的 key )) -->
+                            <span aria-hidden="true">&nbsp; &times;</span>
+                        </button>
+                    </div>
+                    <input type="text" class="form-control" 
+                           v-if="item.id === cacheTodo.id" 
+                           v-model="cacheTitle"
+                           @keyup.esc="cancelEdit" 
+                           @keyup.enter="enterEdit(item)">  <!-- 透過 v-if 來 達成 在項目雙擊後 只顯示 編輯樣式 的效果 -->
+                </li>
+            </ul>
+<!------------------------------------------------------------------------------------------- -->
+            <div class="card-footer d-flex justify-content-between">
+                <span>還有 {{workTodo}} 筆任務未完成</span>
+                <a href="#" @click="clearAll">清除所有任務</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="./main.js"></script>
+</body>
+
+</html>

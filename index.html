@@ -44,7 +44,8 @@
                 <!-- 為 item 增添 key 值 , 讓新<li> 生成時有個索引產生 好讓刪除紐有依據 -->
                 <li class="list-group-item" 
                     v-for="(item,key) in filteredTodos">  <!-- toodos => filteredTodos -->
-                    <div class="d-flex" v-if="item.id !== cacheTodo.id"> <!--使用 v-if 來作條件判斷要顯示原todos內容
+                    <div class="d-flex" 
+                         v-if="item.id !== cacheTodo.id"> <!--使用 v-if 來作條件判斷要顯示原todos內容
                     或是 input 的編輯樣式 (因為在要編輯的代辦事項上雙擊兩下會把todos 裡的內容存到 cache 裡面所以這用以此判斷)-->
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" 

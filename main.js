@@ -1,3 +1,7 @@
+
+
+
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -43,7 +47,7 @@ var app = new Vue({
             this.cacheTitle = item.title ;      // 把 title 存到 cache title  
         },
         cancelEdit : function(){                // 取消編輯 
-            this.cacheTodo = {}                 // 只要把原本內容又換成 空物件即可
+            this.cacheTodo = {}                 //   只要把原本內容又換成 空物件即可
         },
         enterEdit : function(item){
             item.title =  this.cacheTitle; 
@@ -70,7 +74,7 @@ var app = new Vue({
             } else {
                 let compltedTodos = [];
                 this.todos.forEach((item) => {
-                    if (item.completed) {s
+                    if (item.completed) {
                         compltedTodos.push(item);
                     }
                 })

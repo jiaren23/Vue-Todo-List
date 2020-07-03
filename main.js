@@ -2,13 +2,14 @@ var app = new Vue({
     el: '#app',
     data: {
         newTodo: '',  // input 輸入框 (欲鍵入的代辦內容)
-        todos: [      // 陳列代辦事項 內容的地方
+        todos: JSON.parse(localStorage.getItem('todoList')) || [],
+     // [      // 陳列代辦事項 內容的地方
             // {
             //     id: '23', // 代辦事項的 title與checkbox 如果要互相綁定要給 id 
             //     title: '測試項目',         // 代辦內容
             //     completed: false   // 是否完成
             // },
-        ],
+     //   ],
         cacheTodo:{},         // 暫存 欲編輯項目的地方
         cacheTitle : '',      // 暫存 欲編輯 標題的地方  ( 另外載存 title 用意是為了拿它來當作 編輯時 要顯示的內容 )
         visibility: 'all'     // 切換頁嵌 (全部、進行中、已完成)
@@ -26,6 +27,7 @@ var app = new Vue({
                 completed: false
             });
             this.newTodo = "";                  // 推完資料後清空
+            this.storageHandler()
         },
         removeTodo: function (todoThis) {       // 透過索引位置 刪除欲刪除的<li>
             let newIndex = '';                  // 預設一空的值 等等來賦予索引位置
@@ -36,11 +38,13 @@ var app = new Vue({
                 }
             })
             this.todos.splice(newIndex, 1)      // 根據 最後的索引位置 刪除該項 項目
+            this.storageHandler()
         },
         editTodo : function(item){              // 編輯 todo 的 function 
             console.log(item)
             this.cacheTodo = item ;             // 先把 item (todos) 的內容都先存到 cache 
             this.cacheTitle = item.title ;      // 把 title 存到 cache title  
+            this.storageHandler()
         },
         cancelEdit : function(){                // 取消編輯 
             this.cacheTodo = {}                 //   只要把原本內容又換成 空物件即可
@@ -49,11 +53,15 @@ var app = new Vue({
             item.title =  this.cacheTitle; 
             this.cacheTitle = '';               // 清空 暫存標題
             this.cacheTodo = {};
+            this.storageHandler()
         },
         clearAll: function(item){
             this.todos=[];
+            this.storageHandler()
+        },
+        storageHandler(){                       // localStorage
+            localStorage.setItem('todoList', JSON.stringify(this.todos))
         }
-
     },
     computed: {
         filteredTodos: function () {

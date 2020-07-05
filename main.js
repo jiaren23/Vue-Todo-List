@@ -20,7 +20,7 @@ var app = new Vue({
             let value = this.newTodo.trim();     // .trim 用以去除前後多餘的空白
             let timeStamp = Math.floor(Date.now());
             console.log(value, timeStamp);
-            if (!value) return;                  // 空值就不動作
+            if (!value) return; //(value === "") // 空值就不動作
             this.todos.push({                    // 將以上兩筆資料、預設completed => todos
                 id: timeStamp,
                 title: value,
@@ -29,33 +29,35 @@ var app = new Vue({
             this.newTodo = "";                  // 推完資料後清空
             this.storageHandler()
         },
-        removeTodo: function (todoThis) {       // 透過索引位置 刪除欲刪除的<li>
-            let newIndex = '';                  // 預設一空的值 等等來賦予索引位置
-            let vmThis = this;
-            vmThis.todos.forEach((item,index)=>{ 
-                if(todoThis.id === item.id){    // 這裡進行比對我要刪除的項目 id 與 todos id 相符後 才可以刪除
-                    newIndex = index;           // 如果相符就把 索引位置取出來 並存進剛定義好的空殼 newIndex 
+        removeTodo : function (todoFrom_V_For_Item) {       // 透過索引位置 刪除欲刪除的<li>
+        /*   原先只要判斷  this.todos.splice(key,1); 即可
+             但是經過 visibility 的切換後將導致 索引位置亂掉 , 
+             因此刪除的索引依據 要根據 item 本身的 id 做判斷後 再 指出索引 */
+            let newIndex = '';                  // 這裡創建一個新的 空 索引位置
+            this.todos.forEach((todosFromAboveData,index)=>{ // 這裡有個關鍵 , 我不管 all still complete 這個項內容是什麼 , 就是直接針對 all 來做遍歷 this.todos.forEach 
+                if(todoFrom_V_For_Item.id === todosFromAboveData.id ){ // 在這裡進行判斷 如果 我 用 v-for 渲染的 item.id  ===  上方資料的 todos.id
+                    newIndex = index;                   // 就把當下的 索引位置 賦予給 新的索引位置
                 }
             })
             this.todos.splice(newIndex, 1)      // 根據 最後的索引位置 刪除該項 項目
             this.storageHandler()
         },
-        editTodo : function(item){              // 編輯 todo 的 function 
-            console.log(item)
-            this.cacheTodo = item ;             // 先把 item (todos) 的內容都先存到 cache 
-            this.cacheTitle = item.title ;      // 把 title 存到 cache title  
+        editTodo : function(todoFrom_V_For_Item){              // 編輯 todo 的 function 
+            console.log(todoFrom_V_For_Item)
+            this.cacheTodo = todoFrom_V_For_Item ;             // 先把 item (todos) 的內容都先存到 cache 
+            this.cacheTitle = todoFrom_V_For_Item.title ;      // 把 title 存到 cache title  
             this.storageHandler()
         },
         cancelEdit : function(){                // 取消編輯 
-            this.cacheTodo = {}                 //   只要把原本內容又換成 空物件即可
+            this.cacheTodo = {}                 // 要把原本內容又換成 空物件即可 & 恢復畫面 使其離開 input 的 layout 
         },
-        enterEdit : function(item){
-            item.title =  this.cacheTitle; 
-            this.cacheTitle = '';               // 清空 暫存標題
-            this.cacheTodo = {};
+        enterEdit : function(todoFrom_V_For_Item){  // enter 鍵入輸入的內容
+            todoFrom_V_For_Item.title =  this.cacheTitle;      // 按下 enter 後 將輸入值賦予 itemtitle
+            this.cacheTitle = '';               // 再把 cache title 清空 
+            this.cacheTodo = {};                // 恢復畫面 使其離開 input 的 layout 
             this.storageHandler()
         },
-        clearAll: function(item){
+        clearAll : function(){
             this.todos=[];
             this.storageHandler()
         },
@@ -63,36 +65,36 @@ var app = new Vue({
             localStorage.setItem('todoList', JSON.stringify(this.todos))
         }
     },
-    computed: {
+    computed: {                                 // 切換資料狀態 (過濾資料)
         filteredTodos: function () {
             if (this.visibility == 'all') {
                 return this.todos;
             } else if (this.visibility == 'still') {
-                let stillTodos = [];
+                let stillTodos = [];           // 創建一空的 進行中 todos
                 this.todos.forEach((item) => {
-                    if (!item.completed) {
-                        stillTodos.push(item);
+                    if (!item.completed) {     // (item.completed === false) 如果遍歷到該todos 的 completed = false (未完成)
+                        stillTodos.push(item); // 就推該項 todos 進去 進行中  
                     }
                 })
-                return stillTodos
-            } else {
-                let compltedTodos = [];
-                this.todos.forEach((item) => {
-                    if (item.completed) {
-                        compltedTodos.push(item);
+                return stillTodos;
+            } else if (this.visibility == 'completed'){
+                let completedTodos = [];
+                this.todos.forEach((item)=>{
+                    if(item.completed === true){       // (item.completed === true)
+                        completedTodos.push(item)
                     }
                 })
-                return compltedTodos
+                return completedTodos;
             }
         },
         workTodo: function () {
-            let itemnum = 0;
+            let notComplete = 0;
             this.todos.forEach(function (item) {
-              if (!item.completed) {
-                itemnum ++;
+              if (!item.completed) {         // (item.completed == false)
+                notComplete ++;
               }
             })
-            return itemnum;
+            return notComplete;
           }
     }
 });

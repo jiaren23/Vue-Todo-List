@@ -14,10 +14,10 @@
             </div>
             <input type="text" class="form-control" placeholder="準備要做的任務" 
                    v-model="newTodo" 
-                   @keyup.enter="addTodo"> <!-- newTodo  addTodo -->
+                   @keyup.enter="addTodo"> 
             <div class="input-group-append">
                 <button class="btn btn-primary" type="button" 
-                        @click="addTodo">新增</button> <!-- addTodo -->
+                        @click="addTodo">新增</button> 
             </div>
         </div>
         <div class="card text-center">
@@ -35,8 +35,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" 
-                           :class="{active:visibility == 'complted'}"
-                           @click="visibility = 'complted'">已完成</a>
+                           :class="{active:visibility == 'completed'}"
+                           @click="visibility = 'completed'">已完成</a>
                     </li>
                 </ul>
             </div>
@@ -54,7 +54,7 @@
                             <label class="form-check-label" 
                                    :class="{completed:item.completed}"
                                    :for="item.id"
-                                  >  <!-- :class -->
+                                  >  <!-- :class --> 
                                 <span v-text="item.title"></span>
                             </label>
                         </div> 
